@@ -1,0 +1,168 @@
+﻿[
+    {
+        "pid": 1,
+        "position": {
+            "x": 509,
+            "y": 68
+        },
+        "name": "Trigger",
+        "tags": [
+            "Dialogue-1"
+        ],
+        "content": "Did you hear that Ben Smith was retiring from CEO of Intellitech? I wonder who is going for CEO  [[I'm going for it]] [[I may go for it. I have a decent amount of the qualifications]] [[I am not qualified]]",
+        "childrenNames": [
+            "[[I'm going for it]]",
+            "[[I may go for it. I have a decent amount of the qualifications]]",
+            "[[I am not qualified]]"
+        ],
+        "children": [
+            {
+                "pid": 2,
+                "position": {
+                    "x": 249,
+                    "y": 321
+                },
+                "name": "I'm going for it",
+                "tags": [
+                    "Best-"
+                ],
+                "content": "HaHa, that's a good one, you applying for CEO [[It's not a joke, my resume is currently sitting in the Human Resources Department]] [[Nah, you're right, that's a good one]]",
+                "childrenNames": [
+                    "[[It's not a joke, my resume is currently sitting in the Human Resources Department]]",
+                    "[[Nah, you're right, that's a good one]]"
+                ],
+                "parentId": 1,
+                "children": [
+                    {
+                        "pid": 4,
+                        "position": {
+                            "x": 164,
+                            "y": 538
+                        },
+                        "name": "It's not a joke, my resume is currently sitting in the Human Resources Department",
+                        "tags": [
+                            ""
+                        ],
+                        "content": "Sorry, I thought this job would just be too intense for you [[Do you say that because it would be too intense for you?]] [[Yeah, what was I thinking?]]",
+                        "childrenNames": [
+                            "[[Do you say that because it would be too intense for you?]]",
+                            "[[Yeah, what was I thinking?]]"
+                        ],
+                        "parentId": 2,
+                        "children": [
+                            {
+                                "pid": 7,
+                                "position": {
+                                    "x": 89,
+                                    "y": 688
+                                },
+                                "name": "Do you say that because it would be too intense for you?",
+                                "tags": [
+                                    "Climax"
+                                ],
+                                "content": "ring! ring!  I'm sorry but you did not get the job [[Stick with your old job]] [[Go create your own company]] ",
+                                "childrenNames": [
+                                    "[[Stick with your old job]]",
+                                    "[[Go create your own company]]"
+                                ],
+                                "parentId": 4,
+                                "children": [
+                                    {
+                                        "pid": 9,
+                                        "position": {
+                                            "x": 13,
+                                            "y": 838
+                                        },
+                                        "name": "Stick with your old job",
+                                        "tags": [
+                                            ""
+                                        ],
+                                        "content": "Keep on going, things will turn up ",
+                                        "childrenNames": [],
+                                        "parentId": 7,
+                                        "children": []
+                                    },
+                                    {
+                                        "pid": 10,
+                                        "position": {
+                                            "x": 164,
+                                            "y": 838
+                                        },
+                                        "name": "Go create your own company",
+                                        "tags": [
+                                            ""
+                                        ],
+                                        "content": "Congratualations! Only 21% of American tech executives are females so keep being an inspiration to others ",
+                                        "childrenNames": [],
+                                        "parentId": 7,
+                                        "children": []
+                                    }
+                                ]
+                            },
+                            {
+                                "pid": 8,
+                                "position": {
+                                    "x": 239,
+                                    "y": 688
+                                },
+                                "name": "Yeah, what was I thinking?",
+                                "tags": [
+                                    "Dialogue-before-game-over"
+                                ],
+                                "content": "Glad you came to your senses, you would of never been able to do that job",
+                                "childrenNames": [],
+                                "parentId": 4,
+                                "children": []
+                            }
+                        ]
+                    },
+                    {
+                        "pid": 5,
+                        "position": {
+                            "x": 340,
+                            "y": 524
+                        },
+                        "name": "Nah, you're right, that's a good one",
+                        "tags": [
+                            "Game-Over!"
+                        ],
+                        "content": "Game Over! Don't let mysagony stop you, you can do it",
+                        "childrenNames": [],
+                        "parentId": 2,
+                        "children": []
+                    }
+                ]
+            },
+            {
+                "pid": 3,
+                "position": {
+                    "x": 491,
+                    "y": 341
+                },
+                "name": "I may go for it. I have a decent amount of the qualifications",
+                "tags": [
+                    ""
+                ],
+                "content": "Double-click this passage to edit it.",
+                "childrenNames": [],
+                "parentId": 1,
+                "children": []
+            },
+            {
+                "pid": 6,
+                "position": {
+                    "x": 736,
+                    "y": 324
+                },
+                "name": "I am not qualified",
+                "tags": [
+                    "Game-Over"
+                ],
+                "content": "Game Over! Studies shows that most women only apply for jobs if they are 100% qualified while most men apply if they are only 60% qualified.  You maybe more qualified than you think, go for it!",
+                "childrenNames": [],
+                "parentId": 1,
+                "children": []
+            }
+        ]
+    }
+]

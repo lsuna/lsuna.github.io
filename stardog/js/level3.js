@@ -1,0 +1,255 @@
+var level3 = {
+    
+    create: function(){
+        
+        //music
+        this.levelMusic = game.add.audio('music4');
+        this.levelMusic.play('', 0, 1, true);
+        this.levelMusic.onLoop.add(this.playLevelMusic, this);
+        
+        //the world
+        this.bossLevel = game.add.sprite(0, 0, 'bossBG');
+        
+        this.ground = game.add.group();
+        this.ground.addChild(new Ground(game, 0, 490, 'ground3'));
+        this.ground.addChild(new Ground(game, 0, 275, 'platform3'));
+        this.ground.addChild(new Ground(game, 475, 175, 'platform3'));
+        this.ground.addChild(new Ground(game, 650, 175, 'platform3'));
+        this.ground.addChild(new Ground(game, 850, 175, 'platform3'));
+        
+        this.laser = new Laser(game, 1100, 0, 'laser');
+        
+        game.add.sprite(3000, 170, 'exit');
+        this.door = game.add.sprite(3000, 260, 'door');
+        game.physics.arcade.enable(this.door);
+        this.door.enableBody = true;
+        
+        //game group objects
+        this.dogBarks = game.add.group();
+        this.bullets = game.add.group();
+        this.shield = game.add.group();
+        this.healthItems = game.add.group();
+        this.powerUp = game.add.group();
+        this.crates = game.add.group();
+        
+        this.crates.addChild(new Crate(game, 0, 175, 'crate'));
+        this.crates.addChild(new Crate(game, 700, 75, 'crate'));
+        this.crates.addChild(new Crate(game, 800, 75, 'crate'));
+        this.crates.addChild(new Crate(game, 900, 75, 'crate'));
+        
+        //health items
+        this.healthItems.addChild(new HealthItem(game, 15, 248, 'dogbone'));
+        this.healthItems.addChild(new HealthItem(game, 715, 148, 'dogbone'));
+        this.healthItems.addChild(new HealthItem(game, 915, 148 , 'dogbone'));
+        
+        this.switch = game.add.group();
+        this.laserSwitch = (new Switch(game, 1030, 400, 'switch2', "laser"));
+        this.switch.addChild(this.laserSwitch);
+        this.cageSwitch = (new Switch(game, 1930, 400, 'switch2', "cage"));
+        this.switch.addChild(this.cageSwitch);
+        
+        //the player!
+        this.dog = new Dog(game, 10, 390, 'dog', 3, this.dogBarks, this.shield);
+        
+        this.enemies = game.add.group();
+        //the boss
+        this.nox = this.enemies.addChild(new TenebrisNox(game, 750, 234, 'nox', this.dog, this.bullets));
+        
+        //Astrid and Cage
+        this.astrid = new Astrid(game, 2120, 290, 'astrid');
+        this.astrid.frame = 0;
+        this.cage = new Laser(game, 2000, 150, 'cage');
+        
+        //health bar
+        this.healthBar = game.add.sprite(10, 10, 'hb1');
+        this.healthBarP2 = game.add.sprite(10, 10, 'hb2');
+        
+        //bark bar
+        this.barkBar = game.add.sprite(10, 55, 'bb1');
+        this.barkBarP2 = game.add.sprite(10, 55, 'bb2');
+        this.barkBar.tint = 0x29CC33;
+        
+        //sound effects
+        this.hitSound = game.add.audio('damageSound');
+        this.healthSound = game.add.audio('healthSound');
+        this.powerSound = game.add.audio('powerSound');
+        this.shieldSound = game.add.audio('destroyShield');
+        
+        //pause controls
+        this.control = game.input.keyboard.addKey(Phaser.Keyboard.CONTROL);
+        this.control.onDown.add(function() {
+            if (!game.paused) {
+                this.pauseScreen = game.add.sprite(this.game.camera.x, this.game.camera.y,'pause');
+                this.pauseScreen.alpha = 0.9;
+                game.paused = true;
+            }
+            else {
+                game.paused = false;
+                this.pauseScreen.kill();
+            }
+        });
+        
+        this.text2 = game.add.sprite(300, 100, 'noxtext2');
+        this.text1 = game.add.sprite(300, 100, 'noxtext1');
+        game.time.events.add(3000, function() {this.text1.kill();}, this); 
+        game.time.events.add(6000, function() {this.text2.kill();}, this);
+        
+    },
+    
+    update: function(){
+        
+         //camera follow dog
+        this.game.camera.focusOnXY(this.dog.position.x + 200, this.dog.position.y);
+        
+        if (this.dog.health <= 0) {
+            this.levelMusic.stop();
+            game.state.start('level3', false, true);
+        }
+        
+        //update health bar
+        if (this.dog.health > 0) {
+            this.healthBar.scale.set(this.dog.health/15, 1);
+        }
+        else {
+            this.healthBar.scale.set(0,0);
+        }
+        this.healthBar.position.x = this.game.camera.x+10;
+        this.healthBarP2.position.x = this.game.camera.x+10;
+        //bark bar
+        this.barkBar.scale.set(this.dog.barkCount/5, 1);
+        this.barkBar.position.x = this.game.camera.x+10;
+        this.barkBarP2.position.x = this.game.camera.x+10;
+        
+        //ground collide with dog - jump handlers
+        game.physics.arcade.collide(this.dog, this.ground, this.jumpHandler, null, this);
+        game.physics.arcade.collide(this.dog, this.elevators, this.jumpHandler, null, this);
+        game.physics.arcade.collide(this.dog, this.crates, this.jumpHandler, null, this);
+        
+        //ground collisions w/o handlers
+        game.physics.arcade.collide(this.enemies, this.ground);
+        game.physics.arcade.collide(this.astrid, this.ground);
+        game.physics.arcade.collide(this.dog, this.crates);
+        game.physics.arcade.collide(this.dog, this.corpShield);
+        
+        //dog and enemy collide - hurts dog
+        game.physics.arcade.collide(this.dog, this.enemies, this.fightHandler, null, this);
+        //also laser barriers
+        game.physics.arcade.collide(this.dog, this.laser, this.fightHandler, null, this);
+        
+        //collisions - health of first, kill second
+        game.physics.arcade.collide(this.dog, this.bullets, this.healthKillHandler, null, this);
+        game.physics.arcade.overlap(this.enemies, this.dogBarks, this.healthKillHandler, null, this);
+        game.physics.arcade.overlap(this.crates, this.dogBarks, this.healthKillHandler, null, this);
+        game.physics.arcade.collide(this.crates, this.bullets, this.healthKillHandler, null, this);  
+        
+        //collisions - kill one on hit
+        game.physics.arcade.collide(this.bullets, this.ground, this.hitHandler, null, this);
+        game.physics.arcade.collide(this.dogBarks, this.ground, this.hitHandler, null, this);
+        game.physics.arcade.overlap(this.bullets, this.shield, this.hitHandler, null, this);
+        
+        //collisions - kill both
+        game.physics.arcade.collide(this.bullets, this.dogBarks, this.killHandler, null, this);
+        
+        //overlap - collectible items
+        game.physics.arcade.overlap(this.dog, this.healthItems, this.pickUpHandler, null, this);
+        game.physics.arcade.overlap(this.dog, this.powerUp, this.pickUpHandler, null, this);
+        
+        //shield switch
+        game.physics.arcade.overlap(this.dogBarks, this.switch, this.switchHandler, null, this);
+        
+        game.physics.arcade.overlap(this.dog, this.door, this.endLevel, null, this);
+        game.physics.arcade.overlap(this.astrid, this.door, function() {this.astrid.kill()}, null, this);
+        
+        
+    },
+    
+    //dog can jump if touching down on ground
+    jumpHandler: function(dog, ground){
+        if (dog.body.touching.down){
+            dog.canJump = true; 
+        }
+    },
+    
+    fightHandler: function() {
+        this.dog.health-=0.1;
+    },
+    
+    //handle collision between object w/ health and projectile
+    healthKillHandler: function(object, projectile) {
+        object.health-=projectile.power;
+        projectile.kill();
+        object.tint = 0xFF7979
+        this.hitSound.play();
+        game.time.events.add(100, function() {object.tint=0xFFFFFF;}, this);
+    },
+    
+    //handle collision between projectile and indestructable object
+    hitHandler: function(projectile, solid) {
+        projectile.kill();
+    },
+    
+    //handle collision between destructable objects w/o health
+    killHandler: function(object1, object2) {
+        this.hitSound.play();
+        object1.kill();
+        object2.kill();
+    },
+    
+    //handle overlap of dog with collectible item
+    pickUpHandler: function(dog, item){
+        
+        if (item.name == "health"){
+            this.healthSound.play();
+            if(dog.health < 15){
+                dog.health+=item.health;
+            }
+        }
+        else if (item.name == "powerup") {
+            this.powerSound.play();
+            dog.level++;
+            dog.power+=2;
+            this.barkBar.tint = 0xA0FFFF;
+        }
+        
+        item.kill();
+    
+    },
+    
+    switchHandler: function(bark, object) {
+        bark.kill();
+        this.shieldSound.play();
+        if (object.name == "laser") {
+            this.laserSwitch.frame = 1;
+            game.time.events.add(200, function() {this.laser.alpha = 0.5;}, this);
+            game.time.events.add(200, function() {this.laser.alpha =  1;}, this);           
+            game.time.events.add(200, function() {this.laser.alpha = 0.2;}, this);
+            game.time.events.add(200, function() {this.laser.alpha = 0.7;}, this);
+            game.time.events.add(200, function() {this.laser.alpha = 0.1;}, this);
+            game.time.events.add(1000, function() {this.laser.kill();}, this);
+        }
+        else if (object.name == "cage") {
+            this.cageSwitch.frame = 1;
+            game.time.events.add(200, function() {this.cage.alpha = 0.5;}, this);
+            game.time.events.add(200, function() {this.cage.alpha =  1;}, this);           
+            game.time.events.add(200, function() {this.cage.alpha = 0.2;}, this);
+            game.time.events.add(200, function() {this.cage.alpha = 0.7;}, this);
+            game.time.events.add(200, function() {this.cage.alpha = 0.1;}, this);
+            game.time.events.add(1000, function() {this.cage.kill();}, this);
+            this.text4 = game.add.sprite(this.dog.x, 100, 'astridtext2');
+            this.text3 = game.add.sprite(this.dog.x, 100, 'astridtext1');
+            game.time.events.add(3000, function() {this.text3.kill();}, this); 
+            game.time.events.add(6000, function() {this.text4.kill(); this.astrid.free = true;}, this);
+            
+        } 
+    },
+    
+    playLevelMusic: function() {
+        this.levelMusic.play('', 0, 1, true);
+    }, 
+    
+    endLevel: function() {
+        this.levelMusic.stop();
+        game.state.start('credits');
+    }
+
+}
