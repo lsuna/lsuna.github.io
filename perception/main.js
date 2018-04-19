@@ -4,7 +4,7 @@ var mainstate = {
     preload: function()
     {
         this.load.image("freshmenGoodBG", "img/freshmenGood.png");
-        this.load.image("freshmenBadBG", "img/FreshmenBad.png");
+        this.load.image("freshmenBadBG", "img/freshmenBad.png");
         
         this.load.image("seniorGoodBG", "img/seniorGood.png");
         this.load.image("seniorBadBG", "img/seniorBad.png");
